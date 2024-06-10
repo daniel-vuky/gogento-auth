@@ -15,6 +15,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.22  # specify your Go version
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests with coverage
+        run: |
+          mkdir -p bin
+          go test -short -coverprofile=bin/cov.out $(go list ./... | grep -v db/)
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
