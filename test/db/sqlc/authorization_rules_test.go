@@ -20,15 +20,12 @@ func CreateRandomRule(t *testing.T, roleID int64) db.AuthorizationRule {
 		IsAllowed:       true,
 	}
 	rule, err := testStore.InsertAuthorizationRule(context.Background(), newRule)
-	require.NoError(t, err)
-	require.NotEmpty(t, rule)
-	require.Equal(t, newRule.RoleID, rule.RoleID)
-	require.Equal(t, newRule.IsAdministrator, rule.IsAdministrator)
-	require.IsType(t, true, rule.IsAdministrator)
-	require.Equal(t, newRule.PermissionCode, rule.PermissionCode)
-	require.Equal(t, newRule.IsAllowed, rule.IsAllowed)
-	require.IsType(t, true, rule.IsAllowed)
-	require.NotEmpty(t, rule.CreatedAt)
+	compareRule(t, err, &db.AuthorizationRule{
+		RoleID:          newRule.RoleID,
+		IsAdministrator: newRule.IsAdministrator,
+		PermissionCode:  newRule.PermissionCode,
+		IsAllowed:       newRule.IsAllowed,
+	}, &rule)
 
 	return rule
 }
@@ -62,14 +59,12 @@ func compareRule(
 	require.NoError(t, err)
 	require.NotEmpty(t, fromRule)
 	require.NotEmpty(t, targetRule)
-	require.Equal(t, fromRule.RuleID, targetRule.RuleID)
 	require.Equal(t, fromRule.RoleID, targetRule.RoleID)
 	require.Equal(t, fromRule.IsAdministrator, targetRule.IsAdministrator)
 	require.IsType(t, true, targetRule.IsAdministrator)
 	require.Equal(t, fromRule.PermissionCode, targetRule.PermissionCode)
 	require.Equal(t, fromRule.IsAllowed, targetRule.IsAllowed)
 	require.IsType(t, true, targetRule.IsAllowed)
-	require.WithinDuration(t, fromRule.CreatedAt, targetRule.CreatedAt, time.Second)
 }
 
 // TestGetAuthorizationRuleByRole
@@ -102,15 +97,12 @@ func TestInsertAuthorizationRule(t *testing.T) {
 		IsAllowed:       true,
 	}
 	rule, err := testStore.InsertAuthorizationRule(context.Background(), newRule)
-	require.NoError(t, err)
-	require.NotEmpty(t, rule)
-	require.Equal(t, newRule.RoleID, rule.RoleID)
-	require.Equal(t, newRule.IsAdministrator, rule.IsAdministrator)
-	require.IsType(t, true, rule.IsAdministrator)
-	require.Equal(t, newRule.PermissionCode, rule.PermissionCode)
-	require.Equal(t, newRule.IsAllowed, rule.IsAllowed)
-	require.IsType(t, true, rule.IsAllowed)
-	require.NotEmpty(t, rule.CreatedAt)
+	compareRule(t, err, &db.AuthorizationRule{
+		RoleID:          newRule.RoleID,
+		IsAdministrator: newRule.IsAdministrator,
+		PermissionCode:  newRule.PermissionCode,
+		IsAllowed:       newRule.IsAllowed,
+	}, &rule)
 
 	// Case RoleID and PermissionCode unique
 	newRule = &db.InsertAuthorizationRuleParams{
@@ -145,15 +137,14 @@ func TestInsertMultipleAuthorizationRule(t *testing.T) {
 	}
 	listCreatedRules, err := testStore.InsertMultipleAuthorizationRules(context.Background(), insertMultipleParams)
 	require.NoError(t, err)
-	require.NotEmpty(t, listCreatedRules)
 	require.Equal(t, len(listCreatedRules), 10)
 	for index, rule := range listCreatedRules {
-		require.Equal(t, role.RoleID, rule.RoleID)
-		require.Equal(t, listIsAdministrator[index], rule.IsAdministrator)
-		require.IsType(t, true, rule.IsAdministrator)
-		require.Equal(t, listPermissionCode[index], rule.PermissionCode)
-		require.Equal(t, listIsAllowed[index], rule.IsAllowed)
-		require.IsType(t, true, rule.IsAllowed)
+		compareRule(t, nil, &db.AuthorizationRule{
+			RoleID:          listRoleId[index],
+			IsAdministrator: listIsAdministrator[index],
+			PermissionCode:  listPermissionCode[index],
+			IsAllowed:       listIsAllowed[index],
+		}, &rule)
 	}
 }
 

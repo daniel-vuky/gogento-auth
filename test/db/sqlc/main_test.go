@@ -14,7 +14,7 @@ var testStore db.Store
 // TestMain
 // Init store and database connection
 func TestMain(m *testing.M) {
-	connectionString := "postgresql://root:secret@localhost:5432/gogento?sslmode=disable"
+	connectionString := ""
 	connPool, err := pgxpool.New(context.Background(), connectionString)
 	if err != nil {
 		log.Fatalf("cannot connect to database: %v", err)
