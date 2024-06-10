@@ -1,4 +1,4 @@
-DB_URL=postgresql://root:secret@localhost:5432/gogento?sslmode=disable
+DB_URL=postgresql://root:secret@localhost:5432/gogento?sslmode=disable&x-migrations-table=schema_migrations_auth
 init_postgres:
 	docker run --name postgres16 -p 5432:5432 -e POSTGRES_PASSWORD=secret -e POSTGRES_USER=root -d postgres:16-alpine
 start_postgres:
